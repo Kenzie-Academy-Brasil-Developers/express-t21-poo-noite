@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { GameService } from "../services/game.service";
 
 export class GameController {
+   //Etapa do processo (final)
    create(request: Request, response: Response) {
       const gameService = new GameService();
 
@@ -13,7 +14,11 @@ export class GameController {
    getMany(request: Request, response: Response) {
       const gameService = new GameService();
 
-      const games = gameService.getMany(request.query.search as string);
+      const games = gameService.getMany(
+         request.query.search as string,
+         request.query.page ? Number(request.query.page) : undefined,
+         request.query.order as "ASC" | "DESC"
+      );
 
       return response.status(200).json(games);
    }
@@ -21,7 +26,7 @@ export class GameController {
    getOne(request: Request, response: Response) {
       const gameService = new GameService();
 
-      const game = gameService.getOne(Number(request.params.id));
+      const game = gameService.getOne(response.locals.existingGame);
 
       return response.status(200).json(game);
    }
@@ -29,7 +34,7 @@ export class GameController {
    update(request: Request, response: Response) {
       const gameService = new GameService();
 
-      const game = gameService.update(Number(request.params.id), request.body);
+      const game = gameService.update(response.locals.existingGame, request.body);
 
       return response.status(200).json(game);
    }
